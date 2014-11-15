@@ -1,0 +1,11 @@
+name: liquid_tutorial
+description: A sample web application
+dependencies:
+  browser: any
+  liquid: any
+  route_hierarchical: any
+dependency_overrides:
+  liquid:
+    path: ../liquid
+  vdom:
+    path: ../vdom
