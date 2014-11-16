@@ -6,31 +6,28 @@ class App extends VComponent {
   String _title = '';
 
   App(Context context, this.data) : super('div', context) {
-    // Event listeners should be executed outside of the "rendering" zone.
-    Zone.ROOT.run(() {
-      // Root-Level Html Element for this component is created at this stage,
-      // so we can use Event Delegation to listen for children events.
-      element.onKeyPress.matches('input').listen((e) {
-        if (e.keyCode == KeyCode.ENTER) {
-          if (_title.isNotEmpty) {
-            data.createItem(_title);
-            _title = '';
-            // When we invalidate Component, it means that it will be updated
-            // on the next rendering frame.
-            //
-            // This way we can update DOM in batches, no need to update it as
-            // soon as possible, especially when the state can be changed
-            // mutiple times before browser starts to render new frame.
-            invalidate();
-          }
-          e.stopPropagation();
-          e.preventDefault();
+    // Root-Level Html Element for this component is created at this stage,
+    // so we can use Event Delegation to listen for children events.
+    element.onKeyPress.matches('input').listen((e) {
+      if (e.keyCode == KeyCode.ENTER) {
+        if (_title.isNotEmpty) {
+          data.createItem(_title);
+          _title = '';
+          // When we invalidate Component, it means that it will be updated
+          // on the next rendering frame.
+          //
+          // This way we can update DOM in batches, no need to update it as
+          // soon as possible, especially when the state can be changed
+          // mutiple times before browser starts to render new frame.
+          invalidate();
         }
-      });
-      element.onInput.matches('input').listen((e) {
-        _title = _input.value;
         e.stopPropagation();
-      });
+        e.preventDefault();
+      }
+    });
+    element.onInput.matches('input').listen((e) {
+      _title = _input.value;
+      e.stopPropagation();
     });
   }
 

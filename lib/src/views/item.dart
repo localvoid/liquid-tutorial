@@ -10,26 +10,32 @@ class Item extends VComponent {
   vdom.TextInput _input;
 
   Item(Context context, this.data, this.id, this.title) : super('li', context) {
-    Zone.ROOT.run(() {
-      element.onDoubleClick.matches('span').listen((e) {
-        _editing = true;
-        invalidate();
-        // We can't focus _input Element right now, because it will be created
-        // on the next frame. So we can use special [after] Future and wait
-        // until next frame is rendered.
-        Scheduler.nextFrame.after().then((_) {
-          if (_editing) {
-            (_input.ref as InputElement).focus();
-          }
-        });
-      });
-
-      element.onBlur.capture((e) {
+    element.onDoubleClick.matches('span').listen((e) {
+      _editing = true;
+      invalidate();
+      // We can't focus _input Element right now, because it will be created
+      // on the next frame. So we can use special [after] Future and wait
+      // until next frame is rendered.
+      Scheduler.nextFrame.after().then((_) {
         if (_editing) {
-          _editing = false;
-          invalidate();
+          (_input.ref as InputElement).focus();
         }
       });
+      e.stopPropagation();
+      e.preventDefault();
+    });
+
+    element.onInput.listen((e) {
+      title = _input.value;
+      e.stopPropagation();
+    });
+
+    element.onBlur.capture((e) {
+      if (_editing) {
+        _editing = false;
+        data.updateItemTitle(id, title);
+        invalidate();
+      }
     });
   }
 
