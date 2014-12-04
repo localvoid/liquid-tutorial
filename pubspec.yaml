@@ -3,3 +3,6 @@ description: Application from Liquid Tutorial
 dependencies:
   browser: any
   liquid: any
+dependency_overrides:
+  liquid:
+    path: ../liquid

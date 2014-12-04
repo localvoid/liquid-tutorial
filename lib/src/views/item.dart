@@ -1,40 +1,36 @@
 part of tutorial.views;
 
-class Item extends VComponent {
-  final models.ItemList data;
-  final int id;
-
-  String title;
+final vItem = v.componentFactory(Item);
+class Item extends Component {
+  @property models.ItemList data;
+  @property int itemId;
+  @property String title;
 
   bool _editing = false;
-  vdom.TextInput _input;
+  v.VTextInput _input;
 
-  Item(Context context, this.data, this.id, this.title) : super('li', context) {
+  void create() { element = new LIElement(); }
+
+  void init() {
     element.onDoubleClick.matches('span').listen((e) {
       _editing = true;
-      invalidate();
       // We can't focus _input Element right now, because it will be created
       // on the next frame. So we can use special [after] Future and wait
       // until next frame is rendered.
-      Scheduler.nextFrame.after().then((_) {
+      domScheduler.nextFrame.after().then((_) {
         if (_editing) {
-          (_input.ref as InputElement).focus();
+          _input.ref.focus();
         }
       });
+      invalidate();
       e.stopPropagation();
       e.preventDefault();
-    });
-
-    element.onInput.listen((e) {
-      title = _input.value;
-      e.stopPropagation();
     });
 
     element.onBlur.capture((e) {
       if (_editing) {
         _editing = false;
-        data.updateItemTitle(id, title);
-        invalidate();
+        data.updateItemTitle(itemId, _input.value);
       }
     });
   }
@@ -42,29 +38,13 @@ class Item extends VComponent {
   build() {
     var children;
     if (_editing) {
-      _input = vdom.textInput(#input, value: title);
+      _input = v.textInput(value: title);
       children = [_input];
     } else {
       _input = null;
-      children = [vdom.span(#text, [vdom.t(title)])];
+      children = [v.span()(title)];
     }
 
-    return vdom.li(0, children);
-  }
-
-  void updateProperties(String newTitle) {
-    if (title != newTitle) {
-      title = newTitle;
-      update();
-    }
-  }
-
-  static virtual(Object key, models.ItemList data, models.Item item) {
-    return new VDomComponent(key, (component, context) {
-      if (component == null) {
-        return new Item(context, data, item.id, item.title);
-      }
-      component.updateProperties(item.title);
-    });
+    return v.root()(children);
   }
 }

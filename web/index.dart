@@ -5,5 +5,5 @@ import 'package:liquid_tutorial/views.dart' as views;
 
 void main() {
   final data = new models.ItemList();
-  injectComponent(new views.App(null, data), document.body);
+  injectComponent(new views.App()..data = data, document.body);
 }
